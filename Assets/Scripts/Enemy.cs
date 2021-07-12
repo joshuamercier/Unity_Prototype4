@@ -9,6 +9,7 @@ public class Enemy : MonoBehaviour
 
     private Rigidbody enemyRb;
     private GameObject player;
+    private GameObject projectile;
     // Start is called before the first frame update
     void Start()
     {
@@ -26,6 +27,19 @@ public class Enemy : MonoBehaviour
         if(transform.position.y < -10)
         {
             Destroy(gameObject);
+        }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        // If the enemy is hit by the bullet then launch the enemy back and destroy the bullet
+        if (other.CompareTag("Projectile"))
+        {
+            Destroy(other);
+
+            Vector3 oppositeOfBullet = transform.position - other.gameObject.transform.position;
+            enemyRb.AddForce(oppositeOfBullet * other.gameObject.p, ForceMode.Impulse);
+
         }
     }
 }

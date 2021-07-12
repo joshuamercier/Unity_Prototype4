@@ -8,6 +8,7 @@ public class PlayerController : MonoBehaviour
     public float speed = 5.0f;
     public bool hasPowerup;
     public GameObject powerupIndicator;
+    public GameObject projectile;
 
     private Rigidbody playerRb;
     private GameObject focalPoint;
@@ -32,12 +33,33 @@ public class PlayerController : MonoBehaviour
     {
         if (other.CompareTag("Powerup"))
         {
-            hasPowerup = true;
-            Destroy(other.gameObject);
-            // Show indicator
-            powerupIndicator.gameObject.SetActive(true);
-            // Start countdown
-            StartCoroutine(PowerupCountdownRoutine());
+            if(other.name == "Powerup")
+            {
+                hasPowerup = true;
+                Destroy(other.gameObject);
+                // Show indicator
+                powerupIndicator.gameObject.SetActive(true);
+                // Start countdown
+                StartCoroutine(PowerupCountdownRoutine());
+            }
+            else if(other.name == "Powerup_Bullets")
+            {
+                // Grab current position of player
+                Vector3 thisPos = transform.position;
+                // Instantiate the four bullets
+                GameObject bullet1 = Instantiate(projectile, thisPos, projectile.transform.rotation);
+                GameObject bullet2 = Instantiate(projectile, thisPos, projectile.transform.rotation);
+                GameObject bullet3 = Instantiate(projectile, thisPos, projectile.transform.rotation);
+                GameObject bullet4 = Instantiate(projectile, thisPos, projectile.transform.rotation);
+                // Change their roations
+                bullet1.transform.Rotate(0f, 0f, 0f);
+                bullet2.transform.Rotate(0f, 90f, 0f);
+                bullet3.transform.Rotate(0f, 180f, 0f);
+                bullet4.transform.Rotate(0f, 270f, 0f);
+                // Destroy the powerup as it is a once use
+                Destroy(other.gameObject);
+            }
+
         }
     }
 
