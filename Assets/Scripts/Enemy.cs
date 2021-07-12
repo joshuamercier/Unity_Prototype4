@@ -35,10 +35,11 @@ public class Enemy : MonoBehaviour
         // If the enemy is hit by the bullet then launch the enemy back and destroy the bullet
         if (other.CompareTag("Projectile"))
         {
-            Destroy(other);
+            float bulletStrength = other.GetComponent < BulletController >().bulletStrength;
+            Destroy(other.gameObject);
 
             Vector3 oppositeOfBullet = transform.position - other.gameObject.transform.position;
-            enemyRb.AddForce(oppositeOfBullet * other.gameObject.p, ForceMode.Impulse);
+            enemyRb.AddForce(oppositeOfBullet * bulletStrength, ForceMode.Impulse);
 
         }
     }
