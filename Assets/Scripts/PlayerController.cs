@@ -9,10 +9,16 @@ public class PlayerController : MonoBehaviour
     public bool hasPowerup;
     public GameObject powerupIndicator;
     public GameObject projectile;
+    public float hangTime = 2.0f;
+    public float smashSpeed = 20.0f;
+    public float explosionForce =20.0f;
+    public float explosionRadius = 5.0f;
 
     private Rigidbody playerRb;
     private GameObject focalPoint;
     private float powerupStrength = 15.0f;
+    private bool smashing = false;
+    float floorY;
     // Start is called before the first frame update
     void Start()
     {
@@ -33,16 +39,15 @@ public class PlayerController : MonoBehaviour
     {
         if (other.CompareTag("Powerup"))
         {
-            if(other.name == "Powerup")
+            if(other.name.Contains("Powerup_Normal"))
             {
                 hasPowerup = true;
-                Destroy(other.gameObject);
                 // Show indicator
                 powerupIndicator.gameObject.SetActive(true);
                 // Start countdown
                 StartCoroutine(PowerupCountdownRoutine());
             }
-            else if(other.name == "Powerup_Bullets")
+            else if(other.name.Contains("Powerup_Bullets"))
             {
                 // Grab current position of player
                 Vector3 thisPos = transform.position;
@@ -56,10 +61,15 @@ public class PlayerController : MonoBehaviour
                 bullet2.transform.Rotate(0f, 90f, 0f);
                 bullet3.transform.Rotate(0f, 180f, 0f);
                 bullet4.transform.Rotate(0f, 270f, 0f);
-                // Destroy the powerup as it is a once use
-                Destroy(other.gameObject);
-            }
 
+            }
+            else if(other.name.Contains("Powerup_Smash") && !smashing)
+            {
+                smashing = true;
+                StartCoroutine(Smash());
+            }
+            // Destroy the powerup as it is a once use
+            Destroy(other.gameObject);
         }
     }
 
@@ -69,7 +79,7 @@ public class PlayerController : MonoBehaviour
         Vector3 awayFromPlayer = collision.gameObject.transform.position - transform.position;
         if (collision.gameObject.CompareTag("Enemy") && hasPowerup)
         {
-            Debug.Log("Collieded with " + collision.gameObject.name + " with powerup set to " + hasPowerup);
+            Debug.Log("Collided with " + collision.gameObject.name + " with powerup set to " + hasPowerup);
             enemyRb.AddForce(awayFromPlayer * powerupStrength, ForceMode.Impulse);
         }
     }
@@ -79,5 +89,39 @@ public class PlayerController : MonoBehaviour
         hasPowerup = false;
         // Hide indicator
         powerupIndicator.gameObject.SetActive(false);
+    }
+
+    IEnumerator Smash()
+    {
+        // Find all the current enemies
+        var enemies = FindObjectsOfType<Enemy>();
+
+        //Store the y position before taking off
+        floorY = transform.position.y;
+
+        //Calculate the amount of time we will go up
+        float jumpTime = Time.time + hangTime;
+        while (Time.time < jumpTime)
+        {
+            //move the player up while still keeping their x velocity.
+            playerRb.velocity = new Vector2(playerRb.velocity.x, smashSpeed);
+            yield return null;
+        }
+        //Now move the player down
+        while (transform.position.y > floorY)
+        {
+            playerRb.velocity = new Vector2(playerRb.velocity.x, -smashSpeed * 2);
+            yield return null;
+        }
+        //Cycle through all enemies.
+        for (int i = 0; i < enemies.Length; i++)
+        {
+            //Apply an explosion force that originates from our position.
+            if (enemies[i] != null)
+                enemies[i].GetComponent<Rigidbody>().AddExplosionForce(explosionForce, transform.position, explosionRadius, 0.0f, ForceMode.Impulse);
+        }
+        //We are no longer smashing, so set the boolean to false
+        smashing = false;
+
     }
 }

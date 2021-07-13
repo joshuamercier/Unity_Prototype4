@@ -325,10 +325,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eb71b29004adbad46a6eb954debc5843, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 10
+  speed: 7
   hasPowerup: 0
   powerupIndicator: {fileID: 1257488783}
   projectile: {fileID: 1964696960561749068, guid: 9cf149a34bbf9d44cae07b520a96ae09, type: 3}
+  hangTime: 0.3
+  smashSpeed: 25
+  explosionForce: 30
+  explosionRadius: 15
 --- !u!1 &1122013857
 GameObject:
   m_ObjectHideFlags: 0
@@ -358,7 +362,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e72b42bd082de34478b95799854a9770, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rotationSpeed: 50
+  rotationSpeed: 80
 --- !u!4 &1122013859
 Transform:
   m_ObjectHideFlags: 0
@@ -751,8 +755,9 @@ MonoBehaviour:
   enemyCount: 0
   waveNumber: 1
   powerupPrefabs:
-  - {fileID: 2865908402785223900, guid: c2ec601e6f1eaf5499b3afb2ccdb4967, type: 3}
+  - {fileID: 8333773405697667004, guid: d2d73e44864ef2d46a95d77dd999e80b, type: 3}
   - {fileID: 7589736954500884283, guid: b1e4f110547cd754484eee3c49a4c6d2, type: 3}
+  - {fileID: 8153882877674571918, guid: 037993bc7e8dcf34fa4cbc44cd813931, type: 3}
 --- !u!4 &2126427828
 Transform:
   m_ObjectHideFlags: 0
