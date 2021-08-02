@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using TMPro;
 
 public class PlayerController : MonoBehaviour
 {
@@ -13,26 +15,71 @@ public class PlayerController : MonoBehaviour
     public float smashSpeed = 20.0f;
     public float explosionForce =20.0f;
     public float explosionRadius = 5.0f;
+    public bool isGameOver;
+    public bool hasGameStarted;
 
     private Rigidbody playerRb;
     private GameObject focalPoint;
     private float powerupStrength = 15.0f;
     private bool smashing = false;
     float floorY;
-    // Start is called before the first frame update
-    void Start()
-    {
-        playerRb = GetComponent<Rigidbody>();
-        focalPoint = GameObject.Find("Focal Point");
-    }
+
+    [SerializeField] private GameObject spawnManager;
+    [SerializeField] private GameObject gameOverScreen;
+    [SerializeField] private TextMeshProUGUI endWaveText;
+    [SerializeField] private GameObject titleScreen;
+    [SerializeField] private AudioSource backgroundMusic;
 
     // Update is called once per frame
     void Update()
     {
-        float forwardInput = Input.GetAxis("Vertical");
-        playerRb.AddForce(focalPoint.transform.forward * speed * forwardInput);
-        // Update the powerup indicator so it is arround the player
-        powerupIndicator.transform.position = transform.position + new Vector3(0, -0.5f, 0);
+        if (hasGameStarted)
+        {
+            float forwardInput = Input.GetAxis("Vertical");
+            playerRb.AddForce(focalPoint.transform.forward * speed * forwardInput);
+            // Update the powerup indicator so it is arround the player
+            powerupIndicator.transform.position = transform.position + new Vector3(0, -0.5f, 0);
+
+            // If player falls off the island, game ends
+            if (transform.position.y < -10)
+            {
+                isGameOver = true;
+                GameOver();
+            }
+        }
+    }
+
+    public void StartGame()
+    {
+        // Disable title screen
+        titleScreen.SetActive(false);
+        // Set flag
+        hasGameStarted = true;
+        // Start the music
+        backgroundMusic.Play();
+        //Start the game
+        playerRb = GetComponent<Rigidbody>();
+        focalPoint = GameObject.Find("Focal Point");
+        spawnManager.SetActive(true);
+    }
+
+    public void GameOver()
+    {
+        // Enable the Game Over screen
+        gameOverScreen.SetActive(true);
+        // Set score text
+        SetGameOverScoreText();
+    }
+
+    private void SetGameOverScoreText()
+    {
+        string text = "You made it to Wave " + spawnManager.GetComponent<SpawnManager>().waveNumber;
+        endWaveText.text = text;
+    }
+
+    public void RestartGame()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
     private void OnTriggerEnter(Collider other)

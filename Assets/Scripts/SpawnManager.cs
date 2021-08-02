@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class SpawnManager : MonoBehaviour
 {
@@ -13,13 +14,16 @@ public class SpawnManager : MonoBehaviour
     public GameObject[] miniEnemyPrefabs;
     public int bossRound;
 
-
+    [SerializeField] private GameObject player;
+    [SerializeField] private TextMeshProUGUI waveText;
     private float spawnRange = 9;
+    private PlayerController playerController;
     // Start is called before the first frame update
     void Start()
     {
         SpawnEnemyWave(waveNumber);
         SpawnPowerup();
+        playerController = player.GetComponent<PlayerController>();
     }
 
     // Update is called once per frame
@@ -28,10 +32,11 @@ public class SpawnManager : MonoBehaviour
         enemyCount = FindObjectsOfType<Enemy>().Length;
 
         //If all enemies destroyed spawn the next wave
-        if(enemyCount == 0)
+        if(enemyCount == 0 && !playerController.isGameOver)
         {
             // Increase the wave
             waveNumber++;
+            waveText.text = "Wave: " + waveNumber;
 
             //Spawn a boss every x number of waves
             if (waveNumber % bossRound == 0)
