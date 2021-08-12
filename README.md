@@ -5,5 +5,5 @@ Hello,
 
 This project for the Junior Programming Course of Unity Learning is finished with all the features implemented. If you wish to play, go to the link below:
 
-https://play.unity.com/mg/other/unit-4-sb
+https://play.unity.com/mg/other/unit-4-final-build
 
